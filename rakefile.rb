@@ -1,115 +1,135 @@
 ############################################################################
-## 
-## Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies). 
-## All rights reserved. 
-## Contact: Nokia Corporation (testabilitydriver@nokia.com) 
-## 
-## This file is part of Testability Driver. 
-## 
-## If you have questions regarding the use of this file, please contact 
-## Nokia at testabilitydriver@nokia.com . 
-## 
-## This library is free software; you can redistribute it and/or 
-## modify it under the terms of the GNU Lesser General Public 
-## License version 2.1 as published by the Free Software Foundation 
-## and appearing in the file LICENSE.LGPL included in the packaging 
-## of this file. 
-## 
+##
+## Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+## All rights reserved.
+## Contact: Nokia Corporation (testabilitydriver@nokia.com)
+##
+## This file is part of Testability Driver.
+##
+## If you have questions regarding the use of this file, please contact
+## Nokia at testabilitydriver@nokia.com .
+##
+## This library is free software; you can redistribute it and/or
+## modify it under the terms of the GNU Lesser General Public
+## License version 2.1 as published by the Free Software Foundation
+## and appearing in the file LICENSE.LGPL included in the packaging
+## of this file.
+##
 ############################################################################
 
+############################################################################
+#
 # rakefile for building and releasing Testability Driver
+#
+############################################################################
+
+require 'rubygems'
+require 'rubygems/package_task'
+
+GEM_NAME="cutedriver-driver"
+
 @__release_mode = ENV['rel_mode']
 @__release_mode = 'minor' if @__release_mode == nil
-GEM_NAME="cutedriver-driver"
+
+#
 # version information
+#
 def read_version
-	version = "0"
-	File.open(Dir.getwd << '/debian/changelog') do |file|
-		
-		line = file.gets
-		arr = line.split(')')
-		arr = arr[0].split('(')
-		arr = arr[1].split('-')
-		version = arr[0]
-	end
-	
-	if(@__release_mode == 'release')
-		return version
-        elsif( @__release_mode == 'cruise' )
-                return version + "." + Time.now.strftime("pre%Y%m%d")
-	else
-		return version + "." + Time.now.strftime("%Y%m%d%H%M%S")   
-	end
+  version = "0"
+  File.open(Dir.getwd << '/debian/changelog') do |file|
+
+    line = file.gets
+    arr = line.split(')')
+    arr = arr[0].split('(')
+    arr = arr[1].split('-')
+    version = arr[0]
+  end
+
+  if(@__release_mode == 'release')
+    return version
+  elsif( @__release_mode == 'cruise' )
+    return version + "." + Time.now.strftime("pre%Y%m%d")
+  else
+    return version + "." + Time.now.strftime("%Y%m%d%H%M%S")
+  end
 end
 
 @__revision = read_version
 puts "version " << @__revision
 
+#
+#
+#
 def make_version_file(tdriver_version)
 
-	begin
-		File.delete('version.rb')
-	rescue
-	end	
-	File.open('version.rb', 'w') { |f| f.write "ENV['TDRIVER_VERSION'] = '#{tdriver_version}'" }
+  begin
+    File.delete('version.rb')
+  rescue
+  end
+
+  File.open('version.rb', 'w') { |f| f.write "ENV['TDRIVER_VERSION'] = '#{tdriver_version}'" }
 
 end
 
 @__gem_version = @__revision
 
-require 'rubygems'
-require 'rubygems/package_task'
-
+#
+#
+#
 def make_spec
-	#Specification for creating a Testability Driver gem
+  #Specification for creating a Testability Driver gem
 
-	return Gem::Specification.new do |s|
-    
+  return Gem::Specification.new do |s|
+
     gem_version     =   @__gem_version
     s.platform      =   Gem::Platform::RUBY
     s.name          =   GEM_NAME
     s.version       =   "#{gem_version}"
     s.author        =   "Testability Driver team & cuTeDriver team"
     s.email         =   "antti.korventausta@nomovok.com"
-    s.homepage      =   "http://code.nokia.com"
+    s.homepage      =   "https://github.com/nomovok-opensource/cutedriver-driver"
     s.summary       =   "cuTeDriver version of TDriver Testability Driver"
+    s.license       =   "LGPL-2.1"
 
-    s.bindir        =   "bin/"    
+    s.bindir        =   "bin/"
     s.executables   =   FileList['tdriver-devtools', 'start_app_perf']
 
-		s.files         =   
-		  FileList[ 
-			  'README.md',
-			  'lib/*.rb',
-			  'lib/tdriver/*.rb',
-			  'lib/tdriver/base/**/*',
-			  'lib/tdriver/sut/**/*',
-			  'lib/tdriver/verify/**/*',
-			  'lib/tdriver/report/**/*',
-			  'lib/tdriver/util/**/*',
-			  'lib/tdriver-devtools/**/*',
-			  'xml/**/*',
-			  'bin/**/*',
-			  'ext/**/*',
+    s.files         =
+      FileList[
+        'README.md',
+        'lib/*.rb',
+        'lib/tdriver/*.rb',
+        'lib/tdriver/base/**/*',
+        'lib/tdriver/sut/**/*',
+        'lib/tdriver/verify/**/*',
+        'lib/tdriver/report/**/*',
+        'lib/tdriver/util/**/*',
+        'lib/tdriver-devtools/**/*',
+        'xml/**/*',
+        'bin/**/*',
+        'ext/**/*',
         'config/**/*'
-  		].to_a
+      ].to_a
 
     s.require_path  =   "lib/."
     s.has_rdoc      =   false
 
     #s.add_dependency("libxml-ruby", "=0.9.4")
-    s.add_dependency("log4r", ">=1.1.7")
-    s.add_dependency("nokogiri", ">=1.4.1")
-    s.add_dependency("builder", ">=2.1.2")
+
+    #s.add_dependency("log4r", ">=1.1.7")
+    #s.add_dependency("nokogiri", ">=1.4.1")
+    #s.add_dependency("builder", ">=2.1.2")
+
+    s.add_runtime_dependency 'log4r', '~> 1.1', '>= 1.1.7'
+    s.add_runtime_dependency 'nokogiri', '~> 1.4', '>= 1.4.1'
+    s.add_runtime_dependency 'builder', '~> 2.1', '>= 2.1.2'
 
     s.extensions << 'ext/extconf.rb'
-  
-	end
+  end
 
 end
 
 spec = make_spec
-
 
 task :default do | task |
 
@@ -117,15 +137,9 @@ task :default do | task |
 
 end
 
-
-
-
-
-
-
-
-
-
+#
+#
+#
 def delete_folder( folder )
 
   folder = File.expand_path( folder )
@@ -145,9 +159,12 @@ def delete_folder( folder )
     end
 
   end
-  
+
 end
 
+#
+#
+#
 def create_folder( folder )
 
   folder = File.expand_path( folder )
@@ -160,7 +177,7 @@ def create_folder( folder )
 
       FileUtils.mkdir_p( folder )
 
-    rescue Exception => exception 
+    rescue Exception => exception
 
       abort("Error while creating folder (%s: %s)" % [ exception.class, exception.message ] )
 
@@ -170,8 +187,11 @@ def create_folder( folder )
 
 end
 
+#
+#
+#
 def copy_files( source, destination )
-  
+
   destination = File.expand_path( destination )
 
   source = File.expand_path( source )
@@ -197,6 +217,9 @@ def copy_files( source, destination )
 
 end
 
+#
+#
+#
 def run_tdriver_devtools( params, tests )
 
   begin
@@ -212,7 +235,7 @@ def run_tdriver_devtools( params, tests )
     begin
 
       require('tdriver/env')
-        
+
       command = "ruby #{ File.join( ENV['TDRIVER_PATH'], 'lib/tdriver-devtools/tdriver-devtools.rb' ) } #{ params } -t #{ tests }"
 
       puts command
@@ -226,25 +249,28 @@ def run_tdriver_devtools( params, tests )
     end
 
   end
-  
+
 end
 
 task :behaviours do | task |
 
-  puts "\nGenerating behaviour XML files from implementation... "   
+  puts "\nGenerating behaviour XML files from implementation... "
 
   run_tdriver_devtools( '-g behaviours lib/tdriver behaviours', nil )
 
 end
 
+#
+#
+#
 def doc_tasks( tasks, test_results_folder, tests_path_defined )
-  
+
   #test_results_folder = File.expand_path( test_results_folder )
 
   if tests_path_defined == false
     puts "\nWarning: Test results folder not given, using default location (#{ test_results_folder })"
     puts "\nSame as executing:\nrake doc[#{ test_results_folder }]\n\n"
-    sleep 1  
+    sleep 1
   else
     puts "Using given test results from #{ test_results_folder }"
   end
@@ -267,7 +293,7 @@ def doc_tasks( tasks, test_results_folder, tests_path_defined )
 
         when :generate
           run_tdriver_devtools( *task[ 1 ] )
- 
+
         when :render
           run_tdriver_devtools( *task[ 1 ] )
 
@@ -287,25 +313,25 @@ task :doc, :tests do | task, args |
 
   test_results_folder = args[ :tests ] || "../tests/test/feature_xml"
 
-  doc_tasks( 
-    [ 
-      [ :generate, [ '-d -r -g both lib/tdriver doc/output/document.xml', test_results_folder ] ], 
-      [ :copy, [ './doc/images/*', './doc/output/images' ] ] 
+  doc_tasks(
+    [
+      [ :generate, [ '-d -r -g both lib/tdriver doc/output/document.xml', test_results_folder ] ],
+      [ :copy, [ './doc/images/*', './doc/output/images' ] ]
     ],
-    test_results_folder, 
-    args[:tests].nil? 
+    test_results_folder,
+    args[:tests].nil?
   )
 
 end
 
 desc "Task for uninstalling the generated gem"
 task :gem_uninstall do
-  
+
   puts "#########################################################"
   puts "### Uninstalling GEM #{GEM_NAME}     ###"
   puts "#########################################################"
   tdriver_gem = "cutedriver-driver-#{@__gem_version}.gem"
-     
+
   FileUtils.rm(Dir.glob('pkg/*gem'))
   if /win/ =~ RUBY_PLATFORM || /mingw32/ =~ RUBY_PLATFORM
     cmd = "gem uninstall #{GEM_NAME} -a -x -I"
@@ -314,12 +340,12 @@ task :gem_uninstall do
   end
   failure = system(cmd)
 #  raise "uninstalling  #{GEM_NAME} failed" if (failure != true) or ($? != 0)
-  
+
 end
 
 desc "Task for installing the generated gem"
 task :gem_install do
-  
+
   puts "#########################################################"
   puts "### Installing GEM  #{GEM_NAME}       ###"
   puts "#########################################################"
@@ -331,40 +357,12 @@ task :gem_install do
   end
   failure = system(cmd)
   raise "installing  #{GEM_NAME} failed" if (failure != true) or ($? != 0)
-  
+
 end
 
 task :cruise => ['gem_uninstall', 'gem', 'gem_install'] do
-	
+
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 =begin
 
@@ -373,34 +371,34 @@ task :behaviours do | task |
   # reset arguments constant without warnings
   ARGV.clear; ['-g', 'behaviours', 'lib/tdriver', 'behaviours'].each{ | argument | ARGV << argument }
 
-  puts "\nGenerating behaviour XML files from implementation... "   
+  puts "\nGenerating behaviour XML files from implementation... "
 
   require File.expand_path( File.join( File.dirname( __FILE__ ), 'lib/tdriver-devtools/tdriver-devtools.rb' ) )
 
 end
 
 task :doc, :tests do | task, args |
-  
+
   test_results_folder = args[:tests] || "../tests/test/feature_xml"
-      
+
   if args[:tests].nil?
-  
+
     puts "\nWarning: Test results folder not given, using default location (#{ test_results_folder })"
     puts "\nSame as executing:\nrake doc[#{ test_results_folder }]\n\n"
     sleep 1
-  
+
   else
-  
+
     puts "Using given test results from #{ test_results_folder }"
-    
+
   end
-   
+
   test_results_folder = File.expand_path( test_results_folder )
-   
+
   # reset arguments constant without warnings
   ARGV.clear; ['-g', 'both', '-t', test_results_folder, 'lib/tdriver', 'doc/document.xml'].each{ | argument | ARGV << argument }
 
-  puts "\nGenerating documentation XML file... "   
+  puts "\nGenerating documentation XML file... "
 
   require File.expand_path( File.join( File.dirname( __FILE__ ), 'lib/tdriver-devtools/tdriver-devtools.rb' ) )
 
@@ -412,4 +410,3 @@ Gem::PackageTask.new( spec ) do | pkg |
   pkg.gem_spec = spec
   pkg.package_dir = "pkg"
 end
-
