@@ -1,0 +1,21 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    builder (2.1.2)
+    log4r (1.1.10)
+    mini_portile2 (2.1.0)
+    nokogiri (1.7.1)
+      mini_portile2 (~> 2.1.0)
+    rdoc (5.1.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  builder (~> 2.1, >= 2.1.2)
+  log4r (~> 1.1, >= 1.1.7)
+  nokogiri (~> 1.4, >= 1.4.1)
+  rdoc
+
+BUNDLED WITH
+   1.14.6
