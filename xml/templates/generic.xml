@@ -141,7 +141,7 @@
     <parameter name="logging_level" value="0" />
     <parameter name="logging_outputter_enabled" value="false" />
     <!-- default path: /logs/testability/tdriver, windows: logfiles/ under TDriver home folder -->
-    <parameter name="logging_outputter_path" value="/logs/testability/tdriver" windows="logfiles/" /> 
+    <parameter name="logging_outputter_path" value="/var/log/testability/tdriver" windows="logfiles/" /> 
     <parameter name="logging_outputter_unique_filename" value="false" />
     <parameter name="logging_outputter_append" value="false" />
     <parameter name="logging_include_behaviour_info" value="false" />
@@ -158,7 +158,7 @@
     <parameter name="logging_xml_parse_error_dump" value="true" />
 
     <!-- where to store errorneous xml dump -->
-    <parameter name="logging_xml_parse_error_dump_path" value="/logs/testability/tdriver" windows="logfiles/" />
+    <parameter name="logging_xml_parse_error_dump_path" value="/var/log/testability/tdriver" windows="logfiles/" />
 
     <!-- use static or unique filename for xml dump -->
     <parameter name="logging_xml_parse_error_dump_overwrite" value="false" />
